@@ -10,6 +10,9 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
+
+
+
 // Dashboard route with middleware
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
@@ -19,7 +22,6 @@ Route::get('dashboard', function () {
 Route::get('/projects', [ProjectsController::class, 'index'])->name('projects.index'); // Lista de proyectos
 Route::get('/projects/create', [ProjectsController::class, 'create'])->name('projects.create'); // Formulario de creación
 Route::post('/projects', [ProjectsController::class, 'store'])->name('projects.store');
-Route::post('/projects', [ProjectsController::class, 'store'])->name('projects.store'); // Guardar nuevo proyecto
 Route::get('/projects/{id}', [ProjectsController::class, 'show'])->name('projects.show'); // Ver un solo proyecto
 Route::get('/projects/{id}/edit', [ProjectsController::class, 'edit'])->name('projects.edit'); // Formulario de edición
 Route::put('/projects/{id}', [ProjectsController::class, 'update'])->name('projects.update'); // Actualizar proyecto

@@ -9,23 +9,20 @@ use Inertia\Inertia;
 class ProjectsController extends Controller
 {
     public function index()
-    {
-        // Incluye las tareas de cada proyecto
+{
+    $user = auth()->user();
+
+    if ($user->role === 'admin') {
         $projects = Project::with('tasks')->get();
-
-        return Inertia::render('Projects/Index', [
-            'projects' => $projects,
-        ]);
+    } else {
+        $projects = Project::with('tasks')->where('user_id', $user->id)->get();
     }
 
-    public function show($id)
-    {
-        $project = Project::with('tasks')->findOrFail($id);
-        return Inertia::render('Projects/Show', [
-            'project' => $project,
-            'tasks'   => $project->tasks,
-        ]);
-    }
+    return Inertia::render('Projects/Index', [
+        'projects' => $projects,
+    ]);
+}
+
 
     public function edit($id)
     {
