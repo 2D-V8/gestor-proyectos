@@ -26,6 +26,7 @@ Route::get('/projects/{id}', [ProjectsController::class, 'show'])->name('project
 Route::get('/projects/{id}/edit', [ProjectsController::class, 'edit'])->name('projects.edit'); // Formulario de edición
 Route::put('/projects/{id}', [ProjectsController::class, 'update'])->name('projects.update'); // Actualizar proyecto
 Route::delete('/projects/{id}', [ProjectsController::class, 'destroy'])->name('projects.destroy');
+Route::post('/projects/{project}/share', [ProjectsController::class, 'share'])->name('projects.share');
 
 // Tasks Routes
 

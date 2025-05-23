@@ -24,10 +24,24 @@
       <button type="submit" class="hidden">Agregar</button>
     </form>
   </div>
+
+
+  <!-- Compartir proyecto -->
+<div class="mt-4">
+  <details class="group">
+    <summary class="cursor-pointer text-sm text-blue-600 hover:underline">🔗 Compartir proyecto</summary>
+    <div class="mt-2">
+      <Share :project-id="project.id" />
+    </div>
+  </details>
+</div>
+
 </template>
 
 <script setup>
 import TaskItem from './TaskItem.vue'
+import Share from './Share.vue' // ajusta el path si lo tienes en otra carpeta
+
 const props = defineProps(['project', 'newTasks'])
 const emit = defineEmits(['add-task', 'update-project', 'delete-project', 'update-task', 'delete-task'])
 
@@ -36,4 +50,5 @@ const updateProject = (project) => emit('update-project', project)
 const deleteProject = (id) => emit('delete-project', id)
 const updateTask = (task) => emit('update-task', task)
 const deleteTask = (id) => emit('delete-task', id)
+
 </script>

@@ -8,20 +8,26 @@ use Inertia\Inertia;
 
 class ProjectsController extends Controller
 {
-    public function index()
-{
-    $user = auth()->user();
+public function index()
+    {
+        $user = auth()->user();
 
-    if ($user->role === 'admin') {
-        $projects = Project::with('tasks')->get();
-    } else {
-        $projects = Project::with('tasks')->where('user_id', $user->id)->get();
+        if ($user->role === 'admin') {
+            $projects = Project::with('tasks')->get();
+        } else {
+            // Traemos proyectos donde es dueño o donde está compartido
+            $projects = Project::with('tasks')
+                ->where('user_id', $user->id)
+                ->orWhereHas('users', function($query) use ($user) {
+                    $query->where('users.id', $user->id);
+                })
+                ->get();
+        }
+
+        return Inertia::render('Projects/Index', [
+            'projects' => $projects,
+        ]);
     }
-
-    return Inertia::render('Projects/Index', [
-        'projects' => $projects,
-    ]);
-}
 
 
     public function edit($id)
@@ -59,12 +65,34 @@ class ProjectsController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // Asegurarse de que el proyecto se asigne al usuario autenticado
-        $validated['user_id'] = auth()->id(); // Aquí asignamos el user_id
+        // Asignar el proyecto al usuario autenticado
+        $validated['user_id'] = auth()->id();
 
         // Crear el nuevo proyecto
-        Project::create($validated);
+        $project = Project::create($validated);
+
+        // Asociar el proyecto con el usuario como 'owner' en la tabla pivot
+        $project->users()->attach(auth()->id(), ['role' => 'owner']);
 
         return redirect()->back()->with('success', 'Proyecto creado correctamente');
     }
+
+public function share(Request $request, $projectId)
+    {
+        $project = Project::findOrFail($projectId);
+
+        // Ya no hay validación del rol del usuario que comparte
+
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role' => 'required|in:admin,member'
+        ]);
+
+        $project->users()->syncWithoutDetaching([
+            $validated['user_id'] => ['role' => $validated['role']],
+        ]);
+
+        return back()->with('success', 'Proyecto compartido con éxito');
+    }
+
 }
