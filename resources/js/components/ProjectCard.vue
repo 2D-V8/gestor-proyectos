@@ -1,8 +1,9 @@
 <template>
   <div class="bg-gray-100 p-3 md:p-4 rounded-lg shadow-md w-80 md:w-96 flex-shrink-0 flex flex-col max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)]">
+    <!-- Project Header Section -->
     <div class="flex justify-between items-start mb-3">
       <div class="flex-grow mr-2">
-        <input v-model="project.name" @blur="updateProject(project)" class="text-lg md:text-xl font-semibold bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:outline-none focus:border-blue-500 focus:bg-white p-1 rounded w-full transition-colors" placeholder="Nombre del Proyecto" />
+        <input v-model="project.name" @blur="updateProject(project)" class="text-lg md:text-black font-semibold bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:outline-none focus:border-blue-500 focus:bg-white p-1 rounded w-full transition-colors" placeholder="Nombre del Proyecto" />
         <textarea v-model="project.description" @blur="updateProject(project)" class="text-xs md:text-sm text-gray-600 bg-transparent border border-transparent hover:border-gray-200 focus:outline-none focus:border-gray-300 rounded w-full mt-1 p-1 h-16 resize-none focus:bg-white transition-colors" placeholder="Descripción..."></textarea>
       </div>
       <button @click="deleteProject(project.id)" class="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 transition-colors flex-shrink-0" title="Eliminar proyecto">
@@ -12,43 +13,68 @@
       </button>
     </div>
 
+    <!-- Task List Section -->
     <div class="space-y-2 md:space-y-3 overflow-y-auto flex-grow pr-1 tasks-container custom-scrollbar-tasks">
-      <TaskItem v-for="task in project.tasks" :key="task.id" :task="task" @update-task="updateTask" @delete-task="deleteTask" />
+      <TaskItem 
+        v-for="task in project.tasks" 
+        :key="task.id" 
+        :task="task" 
+        @update-task="updateTask" 
+        @delete-task="deleteTask" 
+        :selectTaskForDetails="selectTaskForDetails" 
+      />
       <div v-if="!project.tasks || project.tasks.length === 0" class="text-center text-gray-400 text-sm italic py-4">
         No hay tareas en este proyecto.
       </div>
     </div>
 
+    <!-- Add Task Form Section -->
     <form @submit.prevent="addTask(project.id)" class="mt-auto pt-3">
-      <input v-model="newTasks[project.id]" type="text" :placeholder="'➕ Agregar tarea a ' + project.name.substring(0,15) + (project.name.length > 15 ? '...' : '')" class="border border-gray-300 rounded-md px-3 py-2 w-full text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 shadow-sm" required />
+      <input v-model="newTasks[project.id]" type="text" :placeholder="'➕ Agregar tarea a ' + project.name.substring(0,15) + (project.name.length > 15 ? '...' : '')" class="border border-gray-300 rounded-md px-3 py-2 w-full text-black focus:ring-1 focus:ring-blue-500 focus:border-blue-500 shadow-sm" required />
       <button type="submit" class="hidden">Agregar</button>
     </form>
-  </div>
 
-
-  <!-- Compartir proyecto -->
-<div class="mt-4">
-  <details class="group">
-    <summary class="cursor-pointer text-sm text-blue-600 hover:underline">🔗 Compartir proyecto</summary>
-    <div class="mt-2">
-      <Share :project-id="project.id" />
+    <!-- Share Project Section -->
+    <div class="mt-5">
+      <details class="group">
+        <summary class="cursor-pointer text-black text-blue-600 hover:underline">🔗 Compartir proyecto</summary>
+        <div class="mt-2">
+          <Share :project-id="project.id" />
+        </div>
+      </details>
     </div>
-  </details>
-</div>
 
+  </div>
 </template>
 
 <script setup>
+// Imports
 import TaskItem from './TaskItem.vue'
 import Share from './Share.vue' // ajusta el path si lo tienes en otra carpeta
 
-const props = defineProps(['project', 'newTasks'])
-const emit = defineEmits(['add-task', 'update-project', 'delete-project', 'update-task', 'delete-task'])
+// Props
+const props = defineProps([
+  'project', 
+  'newTasks',
+  'selectTaskForDetails' // Recibir la función del composable como prop
+])
 
+// Emits
+const emit = defineEmits([
+  'add-task', 
+  'update-project', 
+  'delete-project', 
+  'update-task', 
+  'delete-task'
+])
+
+// Functions to emit events to parent (Index.vue)
 const addTask = (projectId) => emit('add-task', projectId)
 const updateProject = (project) => emit('update-project', project)
 const deleteProject = (id) => emit('delete-project', id)
 const updateTask = (task) => emit('update-task', task)
 const deleteTask = (id) => emit('delete-task', id)
+
+// The selectTaskForDetails function is received as a prop and called directly in the template.
 
 </script>

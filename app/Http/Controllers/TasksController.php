@@ -1,5 +1,5 @@
 <?php
-
+/* el tiene que podeer editar casi todos, menos los que se generan automaticamente */
 namespace App\Http\Controllers;
 
 use App\Models\Task;
@@ -24,13 +24,12 @@ public function update(Request $request, $id)
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'nullable|string|in:todo,in_progress,done',
+            'status' => 'nullable|string|in:todo,in_progress,done', /*la tabla tasks, tiene mas campos, como descripcion, fecha, */
         ]);
 
         $task = Task::findOrFail($id);
         $task->update($validated);
 
-        return redirect()->route('projects.show', $task->project_id)->with('success', 'Tarea actualizada');
     }
 
     public function destroy($id)

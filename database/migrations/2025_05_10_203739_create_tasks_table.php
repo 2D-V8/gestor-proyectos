@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * nosotros en el controller solo estamos manejando, descripcion, titulo y el status.
      */
     public function up(): void
     {
