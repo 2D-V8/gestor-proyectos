@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();  // Task description (nullable)
             $table->foreignId('project_id')->constrained()->onDelete('cascade');  // Foreign key to the projects table
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');  // User assigned to the task
-            $table->enum('status', ['pendiente', 'in_progress', 'completed'])->default('pending');  // Task status
+            $table->enum('status', ['pendiente', 'in_progress', 'completed'])->default('pendiente');  // Task status
             $table->integer('assigned_time')->nullable();  // Time estimated in minutes (nullable)
             $table->date('due_date')->nullable();  // Due date (nullable)
             $table->timestamps();  // Created_at and updated_at timestamps

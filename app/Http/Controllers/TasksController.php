@@ -26,7 +26,7 @@ public function update(Request $request, $id)
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'nullable|string',
-        'status' => 'nullable|string|in:todo,in_progress,done', // Ojo con los valores permitidos
+        'status' => 'nullable|string|in:pendiente,in_progress,completed', // Ojo con los valores permitidos 'pendiente', 'in_progress', 'completed'])->default('pending');  // Task status
         'due_date' => 'nullable|date',
         'user_id' => 'nullable|exists:users,id',
     ]);

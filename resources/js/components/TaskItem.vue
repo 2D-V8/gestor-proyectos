@@ -40,9 +40,9 @@ const emitUpdate = () => {
       class="w-full text-sm text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
     >
       <option disabled value="">Estado</option>
-      <option value="todo">Por hacer</option>
+      <option value="pendiente">Por hacer</option>
       <option value="in_progress">En progreso</option>
-      <option value="done">Hecha</option>
+      <option value="completed">Hecha</option>
     </select>
     <input
       v-model="localTask.due_date"
