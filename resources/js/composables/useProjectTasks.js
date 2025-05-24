@@ -1,4 +1,3 @@
-// /composables/useProjectTasks.js
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 
@@ -12,13 +11,20 @@ export function useProjectTasks(initialProjects = []) {
       task: '¿Estás seguro de que deseas eliminar esta tarea?'
     }
     if (confirm(messages[type])) {
-      router.delete(`/${type}s/${id}`)
+      router.delete(`/${type}s/${id}`, {
+        onSuccess: () => {
+          router.reload() // ✅ Recarga tras eliminar
+        }
+      })
     }
   }
 
   const createProject = () => {
     router.post('/projects', newProject.value, {
-      onSuccess: () => Object.assign(newProject.value, { name: '', description: '' })
+      onSuccess: () => {
+        Object.assign(newProject.value, { name: '', description: '' })
+        router.reload() // ✅ Recarga tras crear
+      }
     })
   }
 
@@ -27,16 +33,39 @@ export function useProjectTasks(initialProjects = []) {
     if (!title) return
 
     router.post('/tasks', { title, project_id: projectId }, {
-      onSuccess: () => { newTasks.value[projectId] = '' }
+      onSuccess: () => {
+        newTasks.value[projectId] = ''
+        router.reload() // ✅ Recarga tras agregar tarea
+      }
     })
   }
 
   const updateEntity = (type, entity) => {
-    const data = type === 'project'
-      ? { name: entity.name, description: entity.description }
-      : { title: entity.title, project_id: entity.project_id }
+    let data = {}
 
-    router.put(`/${type}s/${entity.id}`, data)
+    if (type === 'project') {
+      data = {
+        name: entity.name,
+        description: entity.description
+      }
+    } else if (type === 'task') {
+      data = Object.fromEntries(
+        Object.entries({
+          title: entity.title,
+          description: entity.description,
+          status: entity.status,
+          due_date: entity.due_date,
+          user_id: entity.user_id,
+          project_id: entity.project_id
+        }).filter(([_, v]) => v !== undefined)
+      )
+    }
+
+    router.put(`/${type}s/${entity.id}`, data, {
+      onSuccess: () => {
+        router.reload() // ✅ Recarga tras actualizar
+      }
+    })
   }
 
   const updateProject = project => updateEntity('project', project)

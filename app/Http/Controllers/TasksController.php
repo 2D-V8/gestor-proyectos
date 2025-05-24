@@ -20,23 +20,26 @@ class TasksController extends Controller
     }
 
 public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'nullable|string|in:todo,in_progress,done',
-        ]);
+{
+    $task = Task::findOrFail($id);
 
-        $task = Task::findOrFail($id);
-        $task->update($validated);
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'status' => 'nullable|string|in:todo,in_progress,done', // Ojo con los valores permitidos
+        'due_date' => 'nullable|date',
+        'user_id' => 'nullable|exists:users,id',
+    ]);
 
-        return redirect()->route('projects.show', $task->project_id)->with('success', 'Tarea actualizada');
-    }
+    $task->update($validated);
+
+
+}
+
 
     public function destroy($id)
     {
         $task = Task::findOrFail($id);
         $task->delete();
-
     }
 }

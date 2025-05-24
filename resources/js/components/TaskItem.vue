@@ -1,17 +1,62 @@
+<script setup>
+import { reactive, watch } from 'vue'
+
+const props = defineProps(['task'])
+const emit = defineEmits(['update-task', 'delete-task'])
+
+// Creamos copia reactiva local
+const localTask = reactive({ ...props.task })
+
+// Cuando prop task cambie (por ejemplo al recargar la lista), actualizamos localTask
+watch(() => props.task, (newTask) => {
+  Object.assign(localTask, newTask)
+})
+
+// Emitimos los cambios con la copia local actualizada
+const emitUpdate = () => {
+  emit('update-task', { ...localTask })
+}
+</script>
+
 <template>
-  <div class="bg-white p-2 md:p-3 rounded-md shadow border border-gray-200 hover:shadow-lg transition-shadow">
-    <div class="flex justify-between items-center">
-      <input v-model="task.title" @blur="emit('update-task', task)" class="text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:bg-gray-50 p-1 rounded w-full" placeholder="Título de la tarea" />
-      <button @click="emit('delete-task', task.id)" class="text-gray-400 hover:text-red-500 ml-2 p-1 rounded-full hover:bg-red-100 transition-colors flex-shrink-0" title="Eliminar tarea">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+  <div class="bg-white p-3 rounded-md shadow border border-gray-200 hover:shadow-lg transition-shadow space-y-2">
+    <!-- Usamos v-model con localTask -->
+    <input
+      v-model="localTask.title"
+      @blur="emitUpdate"
+      class="w-full font-semibold text-gray-800 border-b border-gray-200 focus:outline-none focus:border-blue-500"
+      placeholder="Título de la tarea"
+    />
+    <textarea
+      v-model="localTask.description"
+      @blur="emitUpdate"
+      class="w-full text-sm text-gray-600 bg-gray-50 rounded p-1 border border-gray-200 focus:outline-none focus:border-blue-400"
+      placeholder="Descripción"
+      rows="2"
+    ></textarea>
+    <select
+      v-model="localTask.status"
+      @change="emitUpdate"
+      class="w-full text-sm text-gray-600 bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+    >
+      <option disabled value="">Estado</option>
+      <option value="todo">Por hacer</option>
+      <option value="in_progress">En progreso</option>
+      <option value="done">Hecha</option>
+    </select>
+    <input
+      v-model="localTask.due_date"
+      @blur="emitUpdate"
+      type="date"
+      class="w-full text-sm text-gray-600 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+    />
+    <div class="flex justify-end">
+      <button
+        @click="emit('delete-task', localTask.id)"
+        class="text-red-500 text-sm hover:underline"
+      >
+        Eliminar
       </button>
     </div>
   </div>
 </template>
-
-<script setup>
-const props = defineProps(['task'])
-const emit = defineEmits(['update-task', 'delete-task'])
-</script>

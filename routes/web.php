@@ -35,6 +35,7 @@ Route::get('/tasks/{id}', [TasksController::class, 'show'])->name('tasks.show');
 Route::post('/tasks', [TasksController::class, 'store'])->name('tasks.store');   // Crear tarea
 Route::put('/tasks/{id}', [TasksController::class, 'update'])->name('tasks.update'); // Actualizar tarea
 Route::delete('/tasks/{id}', [TasksController::class, 'destroy'])->name('tasks.destroy'); // Eliminar tarea
+Route::put('/tasks/{task}', [TasksController::class, 'update'])->middleware('auth');
 
 
 
